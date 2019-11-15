@@ -16,6 +16,12 @@ is_valid_position(X, Y) :-
     X<M,
     Y>=0,
     Y<N.
+
+% delete(SRC, ELM, RES)
+delete([ELM|T], ELM, T).
+delete([H|T], ELM, [H|REST]) :-
+    delete(T, ELM, REST).
+
 % ========================HELPERS======================== %
 
 % ========================MOVES======================== %
@@ -29,8 +35,7 @@ move(right, 0, -1).
 snapped(S) :-
     thanos(X, Y, s0),
     % All stones are collected.
-    ironman_position(X, Y, _, I_S),
-    % ironman_position(X, Y, _, I_S),
+    ironman_position(X, Y, [], I_S),
     S=result(snap, I_S).
 
 ironman_position(X, Y, NEW_STONES, result(ACTION, S)) :-
