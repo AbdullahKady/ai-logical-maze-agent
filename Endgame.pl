@@ -1,8 +1,7 @@
 % ========================FACTS======================== %
 grid_dimensions(5, 5). % A fact as m x n grid
 % Initial locations at state 0
-% ironman_position(1, 2, [[1, 2]], s0).
-ironman_position(2, 2, [[1, 1], [2, 1], [2, 2], [3, 3]], s0).
+ironman_position(0, 0, [[1, 1], [2, 1], [2, 2], [3, 3]], s0).
 thanos(3, 4, s0).
 % ========================FACTS======================== %
 
@@ -10,13 +9,6 @@ thanos(3, 4, s0).
 add_tail([], X, [X]).
 add_tail([H|T], X, [H|L]) :-
     add_tail(T, X, L).
-% ========================HELPERS======================== %
-snapped(S) :-
-    thanos(X, Y, s0),
-    % All stones are collected.
-    ironman_position(X, Y, [], I_S),
-    % ironman_position(X, Y, _, I_S),
-    S=result(snap, I_S).
 
 is_valid_position(X, Y) :-
     grid_dimensions(M, N),
@@ -24,6 +16,22 @@ is_valid_position(X, Y) :-
     X<M,
     Y>=0,
     Y<N.
+% ========================HELPERS======================== %
+
+% ========================MOVES======================== %
+move(up, 1, 0).
+move(down, -1, 0).
+move(left, 0, 1).
+move(right, 0, -1).
+% ========================MOVES======================== %
+
+% ========================PROBLEM======================== %
+snapped(S) :-
+    thanos(X, Y, s0),
+    % All stones are collected.
+    ironman_position(X, Y, _, I_S),
+    % ironman_position(X, Y, _, I_S),
+    S=result(snap, I_S).
 
 ironman_position(X, Y, NEW_STONES, result(ACTION, S)) :-
     member([X, Y], STONES),
@@ -32,32 +40,9 @@ ironman_position(X, Y, NEW_STONES, result(ACTION, S)) :-
     ironman_position(X, Y, STONES, S).
 
 ironman_position(X, Y, STONES, result(ACTION, S)) :-
-    Z is X+1,
-    ACTION=up,
+    move(ACTION, X_FACTOR, Y_FACTOR),
+    PREVIOUS_X is X+X_FACTOR,
+    PREVIOUS_Y is Y+Y_FACTOR,
     is_valid_position(X, Y),
-    ironman_position(Z, Y, STONES, S).
-
-ironman_position(X, Y, STONES, result(ACTION, S)) :-
-    Z is X-1,
-    ACTION=down,
-    is_valid_position(X, Y),
-    ironman_position(Z, Y, STONES, S).
-
-ironman_position(X, Y, STONES, result(ACTION, S)) :-
-    ACTION=left,
-    Z is Y+1,
-    is_valid_position(X, Y),
-    ironman_position(X, Z, STONES, S).
-
-ironman_position(X, Y, STONES, result(ACTION, S)) :-
-    ACTION=right,
-    Z is Y-1,
-    is_valid_position(X, Y),
-    ironman_position(X, Z, STONES, S).
-
-
-% Actions list:
-% left >> Y-1
-% right >> Y+1
-% up >> X-1
-% down >>
+    ironman_position(PREVIOUS_X, PREVIOUS_Y, STONES, S).
+% ========================PROBLEM======================== %
