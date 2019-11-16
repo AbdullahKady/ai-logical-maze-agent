@@ -33,6 +33,17 @@ move(right, 0, -1).
 
 % ========================PROBLEM======================== %
 snapped(S) :-
+    ids(S, 0).
+
+ids(S, L) :-
+    call_with_depth_limit(snapped_helper(S), L, Result),
+    Result\=depth_limit_exceeded.
+
+ids(S, L) :-
+    X is L+1,
+    ids(S, X).
+
+snapped_helper(S) :-
     thanos(X, Y, s0),
     % All stones are collected.
     ironman_position(X, Y, [], I_S),
