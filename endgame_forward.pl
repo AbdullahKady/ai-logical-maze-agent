@@ -30,8 +30,8 @@ snapped(S) :-
     snapped_helper(S).
 
 % Base case to match with the snapped.
-ironman_position(_, [], X, Y, s0) :-
-    ironman_position(X, Y, s0).
+ironman_position(_, [], X, Y, S) :-
+    ironman_position(X, Y, S).
 
 ironman_position(STATES, STONES, X, Y, result(ACTION, S)) :-
     member([X, Y], STONES),
