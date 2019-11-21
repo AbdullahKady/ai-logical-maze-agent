@@ -46,15 +46,14 @@ ids(S, L) :-
 snapped_helper(S) :-
     thanos(X, Y, s0),
     % All stones are collected.
-    ironman_position(X, Y, [], I_S),
-    S=result(snap, I_S).
+    S=result(snap, I_S),
+    ironman_position(X, Y, [], I_S).
 
 ironman_position(X, Y, NEW_STONES, result(ACTION, S)) :-
+    ironman_position(X, Y, STONES, S),
     member([X, Y], STONES),
     ACTION=collect,
-    delete(STONES, [X, Y], NEW_STONES),
-    ironman_position(X, Y, STONES, S).
-
+    delete(STONES, [X, Y], NEW_STONES).
 ironman_position(X, Y, STONES, result(ACTION, S)) :-
     move(ACTION, X_FACTOR, Y_FACTOR),
     PREVIOUS_X is X+X_FACTOR,
