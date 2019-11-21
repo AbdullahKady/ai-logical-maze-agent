@@ -1,15 +1,5 @@
-% ========================FACTS======================== %
-grid_dimensions(5, 5). % A fact as m x n grid
-% Initial locations at state 0
-ironman_position(0, 0, [[1, 1], [2, 1], [2, 2], [3, 3]], s0).
-thanos(3, 4, s0).
-% ========================FACTS======================== %
-
+:- include('KB1.pl').
 % ========================HELPERS======================== %
-add_tail([], X, [X]).
-add_tail([H|T], X, [H|L]) :-
-    add_tail(T, X, L).
-
 is_valid_position(X, Y) :-
     grid_dimensions(M, N),
     X>=0,
@@ -21,7 +11,6 @@ is_valid_position(X, Y) :-
 delete([ELM|T], ELM, T).
 delete([H|T], ELM, [H|REST]) :-
     delete(T, ELM, REST).
-
 % ========================HELPERS======================== %
 
 % ========================MOVES======================== %
@@ -33,20 +22,22 @@ move(right, 0, -1).
 
 % ========================PROBLEM======================== %
 snapped(S) :-
-    ids(S, 0).
+    % snapped predicate simply snapped_ids, which will query the snapped in an IDS fashion (increasing depth limit)
+    snapped_ids(S, 0).
 
-ids(S, L) :-
-    call_with_depth_limit(snapped_helper(S), L, Result),
-    Result\=depth_limit_exceeded.
+snapped_ids(S, L) :-
+    call_with_depth_limit(snapped_helper(S), L, RESULT),
+    % Prolog will populate the result with the following constant value if the depth limit is reached.
+    RESULT\=depth_limit_exceeded.
 
-ids(S, L) :-
+snapped_ids(S, L) :-
     X is L+1,
-    ids(S, X).
+    snapped_ids(S, X).
 
 snapped_helper(S) :-
     thanos(X, Y, s0),
-    % All stones are collected.
     S=result(snap, I_S),
+    % All stones are collected, and IronMan is at the same X, Y as thanos.
     ironman_position(X, Y, [], I_S).
 
 ironman_position(X, Y, NEW_STONES, result(ACTION, S)) :-
@@ -54,6 +45,7 @@ ironman_position(X, Y, NEW_STONES, result(ACTION, S)) :-
     member([X, Y], STONES),
     ACTION=collect,
     delete(STONES, [X, Y], NEW_STONES).
+
 ironman_position(X, Y, STONES, result(ACTION, S)) :-
     move(ACTION, X_FACTOR, Y_FACTOR),
     PREVIOUS_X is X+X_FACTOR,
