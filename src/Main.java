@@ -2,10 +2,9 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Main {
-    public static void GenGrid(String grid) {
+    public static void GenGrid(String grid, String filePath) {
         Scanner scanner = new Scanner(grid);
         scanner.useDelimiter(";|,");
-        // m,n;ix,iy;tx,ty; s1x,s1y,s2x,s2y,s3x,s3y,s4x,s4y
         int[] dimensions = { scanner.nextInt(), scanner.nextInt() };
         int[] ironMan = { scanner.nextInt(), scanner.nextInt() };
         int[] thanos = { scanner.nextInt(), scanner.nextInt() };
@@ -14,8 +13,9 @@ public class Main {
             stones[i][0] = scanner.nextInt();
             stones[i][1] = scanner.nextInt();
         }
+        scanner.close();
         try {
-            PrintWriter writer = new PrintWriter("KB.pl", "UTF-8");
+            PrintWriter writer = new PrintWriter(filePath, "UTF-8");
             String gridPredicate = String.format("grid_dimensions(%d, %d).", dimensions[0], dimensions[1]);
             String ironManPredicate = String.format("ironman_position(%d, %d, s0).", ironMan[0], ironMan[1]);
             String thanosPredicate = String.format("thanos(%d, %d, s0).", thanos[0], thanos[1]);
@@ -56,7 +56,8 @@ public class Main {
     }
 
     public static void main(String args[]) {
-        // TODO: Hard code 2 KB1, KB2 files.
-        GenGrid("5,5;1,2;3,4;1,1,2,1,2,2,3,3");
+        // This is the more straight-forward implementation of the program (Base case).
+        GenGrid("5,5;1,2;3,4;1,1,2,1,2,2,3,3", "KB1.pl");
+        GenGrid("5,5;2,2;4,4;1,2,2,1,3,2,3,3", "KB2.pl");
     }
 }

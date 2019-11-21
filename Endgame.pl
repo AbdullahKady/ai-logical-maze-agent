@@ -1,9 +1,10 @@
-% ========================FACTS======================== %
-grid_dimensions(5, 5). % A fact as m x n grid
-% Initial locations at state 0
-ironman_position(0, 0, [[1, 1], [2, 1], [2, 2], [3, 3]], s0).
-thanos(3, 4, s0).
-% ========================FACTS======================== %
+:- include('KB1.pl').
+% ========================CONSTANTS======================== %
+move(up, 1, 0).
+move(down, -1, 0).
+move(left, 0, 1).
+move(right, 0, -1).
+% ========================CONSTANTS======================== %
 
 % ========================HELPERS======================== %
 add_tail([], X, [X]).
@@ -19,45 +20,32 @@ is_valid_position(X, Y) :-
 
 % delete(SRC, ELM, RES)
 delete([ELM|T], ELM, T).
+
 delete([H|T], ELM, [H|REST]) :-
     delete(T, ELM, REST).
-
 % ========================HELPERS======================== %
-
-% ========================MOVES======================== %
-move(up, 1, 0).
-move(down, -1, 0).
-move(left, 0, 1).
-move(right, 0, -1).
-% ========================MOVES======================== %
 
 % ========================PROBLEM======================== %
 snapped(S) :-
-    ids(S, 0).
+    snapped_helper(S).
 
-ids(S, L) :-
-    call_with_depth_limit(snapped_helper(S), L, Result),
-    Result\=depth_limit_exceeded.
+% Base case to match with the snapped.
+ironman_position(_, [], X, Y, S) :-
+    ironman_position(X, Y, S).
 
-ids(S, L) :-
-    X is L+1,
-    ids(S, X).
-
-snapped_helper(S) :-
-    thanos(X, Y, s0),
-    % All stones are collected.
-    S=result(snap, I_S),
-    ironman_position(X, Y, [], I_S).
-
-ironman_position(X, Y, NEW_STONES, result(ACTION, S)) :-
-    ironman_position(X, Y, STONES, S),
+ironman_position(STATES, STONES, X, Y, result(ACTION, S)) :-
     member([X, Y], STONES),
     ACTION=collect,
-    delete(STONES, [X, Y], NEW_STONES).
-ironman_position(X, Y, STONES, result(ACTION, S)) :-
-    move(ACTION, X_FACTOR, Y_FACTOR),
-    PREVIOUS_X is X+X_FACTOR,
-    PREVIOUS_Y is Y+Y_FACTOR,
+    delete(STONES, [X, Y], NEW_STONES),
+    ironman_position(STATES, NEW_STONES, X, Y, S).
+
+ironman_position(STATES, STONES, X, Y, result(A, S)) :-
+    move(A, X_D, Y_D),
+    Z is X_D+X,
+    W is Y_D+Y,
     is_valid_position(X, Y),
-    ironman_position(PREVIOUS_X, PREVIOUS_Y, STONES, S).
+    T=[X, Y],
+    not(member(T, STATES)),
+    add_tail(STATES, T, NEW_STATES),
+    ironman_position(NEW_STATES, STONES, Z, W, S).
 % ========================PROBLEM======================== %
