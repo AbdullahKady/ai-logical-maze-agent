@@ -1,18 +1,4 @@
-% ========================KNOWLEDGE BASE======================== %
-grid_dimensions(5, 5).
-ironman_position(1, 2, s0).
-thanos(3, 4, s0).
-% This should be generated automatically via Java as well.
-snapped_helper(S) :-
-    thanos(X, Y, s0),
-    ironman_position([[]],
-                     [[1, 1], [2, 1], [2, 2], [3, 3]],
-                     X,
-                     Y,
-                     I_S),
-    S=result(snap, I_S).
-% ========================KNOWLEDGE BASE======================== %
-
+:- include('KB.pl').
 % ========================CONSTANTS======================== %
 move(up, 1, 0).
 move(down, -1, 0).
@@ -43,6 +29,7 @@ delete([H|T], ELM, [H|REST]) :-
 snapped(S) :-
     snapped_helper(S).
 
+% Base case to match with the snapped.
 ironman_position(_, [], X, Y, s0) :-
     ironman_position(X, Y, s0).
 
