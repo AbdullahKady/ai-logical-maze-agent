@@ -39,6 +39,6 @@ public class Main {
     public static void main(String args[]) {
         // TODO: Hard code 2 KB1, KB2 files.
         GenGrid("5,5;1,2;3,4;1,1,2,1,2,2,3,3", "KB1.pl");
-        GenGrid("5,5;1,2;3,4;1,1,2,1,2,2,3,3", "KB2.pl");
+        GenGrid("5,5;2,2;4,4;1,2,2,1,3,2,3,3", "KB2.pl");
     }
 }
