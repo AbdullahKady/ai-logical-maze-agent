@@ -1,5 +1,6 @@
 :- include('KB1.pl').
 % ========================HELPERS======================== %
+% True if X&Y are within the grid's boundraies.
 is_valid_position(X, Y) :-
     grid_dimensions(M, N),
     X>=0,
@@ -14,6 +15,8 @@ delete([H|T], ELM, [H|REST]) :-
 % ========================HELPERS======================== %
 
 % ========================MOVES======================== %
+% Movements are represented as constant predicates/facts to avoid
+% the repetition of the movement logic in the successor axioms.
 move(up, 1, 0).
 move(down, -1, 0).
 move(left, 0, 1).
@@ -40,12 +43,15 @@ snapped_helper(S) :-
     % All stones are collected, and IronMan is at the same X, Y as thanos.
     ironman_position(X, Y, [], I_S).
 
+% Stone collection axiom: The resulting suituation will be in the same X&Y
+% position, the difference will be in the stones list (the one @X,Y will be removed).
 ironman_position(X, Y, NEW_STONES, result(ACTION, S)) :-
     ironman_position(X, Y, STONES, S),
     member([X, Y], STONES),
     ACTION=collect,
     delete(STONES, [X, Y], NEW_STONES).
 
+% Movement axiom (with X&Y movements, and the action permuation "up, down etc.")
 ironman_position(X, Y, STONES, result(ACTION, S)) :-
     move(ACTION, X_FACTOR, Y_FACTOR),
     PREVIOUS_X is X+X_FACTOR,
